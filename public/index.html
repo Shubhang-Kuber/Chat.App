@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Welcome to the Chat App</h1>
+<div id="messages"></div>
+<div id="input-container">
+    <input type="text" id="messageInput" placeholder="Type your message here...">
+    <button id="sendButton">Send</button>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const sendButton = document.getElementById('sendButton');
+    const messageInput = document.getElementById('messageInput');
+    const allMessagesDiv = document.getElementById('messages');
+
+    function sendMessage() {
+        const message = messageInput.value;
+        if (message.trim() !== '') {
+            socket.emit('chatMessage', message);
+            appendMessage(message, 'sent');
+            messageInput.value = '';
+        }
+    }
+
+    function appendMessage(message, type) {
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('message-container');
+        
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', type);
+        messageElement.textContent = message;
+        
+        messageContainer.appendChild(messageElement);
+        allMessagesDiv.appendChild(messageContainer);
+        allMessagesDiv.scrollTop = allMessagesDiv.scrollHeight;
+    }
+
+    socket.on('message', (message) => {
+        appendMessage(message, 'received');
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
