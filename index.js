@@ -48,10 +48,12 @@ io.on("connection", (socket) => {
     });
 });
      
+// Serve all static files (like style.css) out of the public folder
 app.use(express.static(path.join(__dirname, "public")));
 
+// Serve index.html when someone visits the main URL
 app.get("/", (req, res) => {
-    return res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // 5. DYNAMIC PORT ALLOCATION FOR CLOUD DEPLOYMENT
