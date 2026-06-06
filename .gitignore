@@ -1,0 +1,9 @@
+# Dependency directory
+node_modules/
+
+# Firebase Private Keys / Secrets
+firebase-service-account.json
+
+# Optional: System files
+.DS_Store
+Thumbs.db
