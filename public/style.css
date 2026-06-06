@@ -1,79 +1,276 @@
 body {
-    font-family: sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Deep cosmic black to a rich star-cloud nebula center */
+    background: radial-gradient(circle at 50% 50%, #11072c 0%, #050314 70%, #000000 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     margin: 0;
     padding: 20px;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    /* Enable 3D depth perception for elements flying forward */
+    perspective: 800px;
 }
 
 h1 {
-    color: #333;
+    color: #fff;
+    text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff, 0 0 30px #007bff;
+    font-weight: 300;
+    letter-spacing: 3px;
+    z-index: 100;
+    margin-top: 0;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    text-align: center;
 }
 
-#messages {
+/* ==========================================
+   🚀 THE 3D SPACESHIP TRAVEL ENVIRONMENT 
+   ========================================== */
+
+/* Space Container holding elements moving out towards the viewer */
+.space-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* --- CONTINUOUS COMETS (Streaking from center outwards) --- */
+.comet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    /* Bright neon kinetic energy tails */
+    box-shadow: 0 0 20px #00f3ff, var(--tail-x) var(--tail-y) 30px 4px var(--comet-color);
+    opacity: 0;
+    animation: hyperDrive var(--duration) linear infinite;
+    animation-delay: var(--delay);
+}
+
+/* --- BURNING ASTEROIDS (Tumbling closer in 3D space) --- */
+.asteroid-3d {
+    position: absolute;
+    top: var(--start-y);
+    left: var(--start-x);
+    width: var(--size);
+    height: var(--size);
+    background: #3a2f28;
+    clip-path: polygon(30% 0%, 75% 10%, 100% 45%, 85% 85%, 35% 100%, 0% 70%);
+    /* Firey magma glow on the edge facing atmospheric friction */
+    box-shadow: inset -6px -6px 15px rgba(0,0,0,0.8), 0 0 15px #ff4500;
+    border: 1px solid #ff7700;
+    opacity: 0;
+    transform-style: preserve-3d;
+    animation: flyForward var(--duration) linear infinite;
+    animation-delay: var(--delay);
+}
+
+/* --- THE SOLAR SYSTEM JURNEY (Planets approaching closely) --- */
+.planet-encounter {
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    width: var(--p-size);
+    height: var(--p-size);
+    background: var(--planet-surface);
+    border-radius: 50%;
+    /* Realistic spherical shadowing matching cockpit lighting shadows */
+    box-shadow: inset -30px -30px 50px rgba(0, 0, 0, 0.9), 0 0 40px var(--planet-glow);
+    opacity: 0;
+    z-index: 2;
+    animation: encounterPlanet var(--p-duration) linear infinite;
+    animation-delay: var(--p-delay);
+}
+
+/* ==========================================
+   🪐 COCKPIT / CHAT CONTAINER (GLASSMORPHISM)
+   ========================================== */
+
+#messages {
+    width: 90%;
     max-width: 600px;
-    height: 400px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
+    height: 50vh;
+    /* Translucent control panel screen visual */
+    background: rgba(8, 12, 28, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    /* Dual holographic neon frames */
+    border: 2px solid rgba(0, 243, 255, 0.25);
+    border-radius: 20px;
+    padding: 20px;
     overflow-y: auto;
-    background-color: #fff;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5), 
+        inset 0 0 30px rgba(0, 243, 255, 0.1),
+        0 0 20px rgba(0, 243, 255, 0.1);
+    z-index: 10;
+    position: relative;
 }
+
+/* Add UI crosshairs / bracket designs to corners to emphasize spaceship cockpit feel */
+#messages::before, #messages::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #00f3ff;
+    pointer-events: none;
+}
+#messages::before { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+#messages::after { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
 
 .message-container {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 
 .message {
-    padding: 10px 15px;
-    border-radius: 20px;
+    padding: 12px 18px;
+    border-radius: 18px;
     max-width: 70%;
     word-wrap: break-word;
+    font-size: 15px;
+    color: #fff;
+    line-height: 1.4;
 }
 
+/* Sent message: Plasma Engine Blue Glow */
 .sent {
-    background-color: #dcf8c6;
+    background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%);
     align-self: flex-end;
     margin-left: auto;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+    border-bottom-right-radius: 4px;
 }
 
+/* Received message: Warp Core Deep Violet */
 .received {
-    background-color: #e9e9eb;
+    background: linear-gradient(135deg, #8a2387 0%, #e94057 100%);
     align-self: flex-start;
+    box-shadow: 0 0 15px rgba(233, 64, 87, 0.4);
+    border-bottom-left-radius: 4px;
 }
+
+/* --- PILOT CONTROLS INPUT PANEL --- */
 
 #input-container {
     display: flex;
-    width: 100%;
-    max-width: 600px;
+    width: 90%;
+    max-width: 640px;
+    z-index: 10;
 }
 
 #messageInput {
     flex-grow: 1;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 10px 15px;
-    font-size: 16px;
+    background: rgba(10, 15, 30, 0.8);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    border-radius: 30px;
+    padding: 14px 22px;
+    font-size: 15px;
+    color: #fff;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#messageInput:focus {
+    border-color: #00f3ff;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4), inset 0 0 10px rgba(0, 243, 255, 0.2);
+    background: rgba(15, 25, 50, 0.9);
+}
+
+#messageInput::placeholder {
+    color: rgba(0, 243, 255, 0.4);
+    font-style: italic;
 }
 
 #sendButton {
     border: none;
-    background-color: #007bff;
+    background: linear-gradient(90deg, #ff007f 0%, #7928ca 100%);
     color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-    margin-left: 10px;
+    padding: 0 30px;
+    border-radius: 30px;
+    margin-left: 14px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 20px rgba(121, 40, 202, 0.5);
+    transition: all 0.3s ease;
 }
 
 #sendButton:hover {
-    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
 }
+
+/* ==========================================
+   🛸 INTERSTELLAR KEYFRAME ANIMATIONS
+   ========================================== */
+
+/* 1. Comets flying from deep center towards the edges expanding outward */
+@keyframes hyperDrive {
+    0% {
+        transform: translate(-50%, -50%) translate3d(0, 0, -1000px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        /* Pushes items directly past the viewport edges */
+        transform: translate(-50%, -50%) translate3d(var(--move-x), var(--move-y), 800px);
+        opacity: 0;
+    }
+}
+
+/* 2. Asteroids passing by tumbling on all 3 Axes */
+@keyframes flyForward {
+    0% {
+        transform: translate3d(0, 0, -1000px) rotateX(0deg) rotateY(0deg);
+        opacity: 0;
+    }
+    5% { opacity: 1; }
+    85% { opacity: 1; }
+    100% {
+        transform: translate3d(calc(var(--start-x) * 1.5), calc(var(--start-y) * 1.5), 600px) rotateX(360deg) rotateY(720deg);
+        opacity: 0;
+    }
+}
+
+/* 3. Smooth planetary arrivals approaching from deep star clusters */
+@keyframes encounterPlanet {
+    0% {
+        transform: translate3d(0, 0, -1200px);
+        opacity: 0;
+    }
+    15% { opacity: 0.9; }
+    90% { opacity: 0.9; }
+    100% {
+        transform: translate3d(var(--drift-x), var(--drift-y), 500px);
+        opacity: 0;
+    }
+}
+
+/* Custom Scrollbar */
+#messages::-webkit-scrollbar { width: 6px; }
+#messages::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+#messages::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.4); border-radius: 10px; }

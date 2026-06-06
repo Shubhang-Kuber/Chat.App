@@ -4,22 +4,95 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
+    <title>Cockpit Interstellar Chat</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Welcome to the Chat App</h1>
+
+<div class="space-viewport" id="universe"></div>
+
+<h1>Cockpit Navigation Display</h1>
 <div id="messages"></div>
 <div id="input-container">
-    <input type="text" id="messageInput" placeholder="Type your message here...">
+    <input type="text" id="messageInput" placeholder="Broadcast transmission vectors...">
     <button id="sendButton">Send</button>
 </div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
     const sendButton = document.getElementById('sendButton');
     const messageInput = document.getElementById('messageInput');
     const allMessagesDiv = document.getElementById('messages');
+    const universe = document.getElementById('universe');
+
+    // Dynamic Deep Space Generation Engine
+    function launchUniverseEngine() {
+        // 1. Generate Hyperdrive Comets / Star Streaks
+        for (let i = 0; i < 60; i++) {
+            const comet = document.createElement('div');
+            comet.classList.add('comet');
+            
+            // Map out radial projection paths traveling away from center
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 400 + Math.random() * 600;
+            const moveX = `${Math.cos(angle) * distance}px`;
+            const moveY = `${Math.sin(angle) * distance}px`;
+            
+            // Choose random color spectrums for glowing tails
+            const colors = ['#00f3ff', '#ff007f', '#ffea00', '#ffffff', '#7928ca'];
+            const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+
+            comet.style.setProperty('--move-x', moveX);
+            comet.style.setProperty('--move-y', moveY);
+            comet.style.setProperty('--tail-x', `${Math.cos(angle) * -40}px`);
+            comet.style.setProperty('--tail-y', `${Math.sin(angle) * -40}px`);
+            comet.style.setProperty('--comet-color', chosenColor);
+            comet.style.setProperty('--duration', `${1 + Math.random() * 3}s`);
+            comet.style.setProperty('--delay', `${Math.random() * -5}s`);
+            
+            universe.appendChild(comet);
+        }
+
+        // 2. Generate Volatile Magma Asteroids
+        for (let i = 0; i < 8; i++) {
+            const asteroid = document.createElement('div');
+            asteroid.classList.add('asteroid-3d');
+            
+            asteroid.style.setProperty('--start-x', `${Math.random() * 100}vw`);
+            asteroid.style.setProperty('--start-y', `${Math.random() * 100}vh`);
+            asteroid.style.setProperty('--size', `${15 + Math.random() * 25}px`);
+            asteroid.style.setProperty('--duration', `${6 + Math.random() * 8}s`);
+            asteroid.style.setProperty('--delay', `${Math.random() * -10}s`);
+            
+            universe.appendChild(asteroid);
+        }
+
+        // 3. Sequential Solar System Horizons (Mars, Neptune, Jupiter, Venus)
+        const planetData = [
+            { name: 'Mars', surface: 'radial-gradient(circle at 30% 30%, #ff5722, #bf360c, #000)', glow: 'rgba(255,87,34,0.3)', size: '220px', x: '10vw', y: '15vh', duration: '35s', delay: '0s', dx: '-100px', dy: '50px' },
+            { name: 'Neptune', surface: 'radial-gradient(circle at 30% 30%, #2196f3, #0d47a1, #000)', glow: 'rgba(33,150,243,0.3)', size: '280px', x: '60vw', y: '40vh', duration: '40s', delay: '12s', dx: '200px', dy: '-50px' },
+            { name: 'Jupiter', surface: 'repeating-linear-gradient(15deg, #b08d57 0px, #e7dbb7 20px, #96723b 40px), radial-gradient(circle at 30% 30%, transparent, #000)', glow: 'rgba(231,219,183,0.2)', size: '420px', x: '5vw', y: '30vh', duration: '50s', delay: '25s', dx: '-300px', dy: '-100px' }
+        ];
+
+        planetData.forEach(p => {
+            const planet = document.createElement('div');
+            planet.classList.add('planet-encounter');
+            
+            planet.style.setProperty('--planet-surface', p.surface);
+            planet.style.setProperty('--planet-glow', p.glow);
+            planet.style.setProperty('--p-size', p.size);
+            planet.style.setProperty('--x', p.x);
+            planet.style.setProperty('--y', p.y);
+            planet.style.setProperty('--p-duration', p.duration);
+            planet.style.setProperty('--p-delay', p.delay);
+            planet.style.setProperty('--drift-x', p.dx);
+            planet.style.setProperty('--drift-y', p.dy);
+            
+            universe.appendChild(planet);
+        });
+    }
+    launchUniverseEngine();
 
     function sendMessage() {
         const message = messageInput.value;
