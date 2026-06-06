@@ -4,8 +4,16 @@ const path = require("path"); // For absolute path resolution
 const { Server } = require("socket.io");
 const admin = require("firebase-admin"); // 1. Import Firebase Admin SDK
 
-// 2. Load your downloaded Firebase credentials file
-const serviceAccount = require("./firebase-service-account.json");
+// 2. DYNAMICALLY LOAD CREDENTIALS FOR LOCAL VS CLOUD PRODUCTION
+let serviceAccount;
+
+if (process.env.FIREBASE_SECRET) {
+  // When running live on Render, parse the secure environment variable string back into JSON
+  serviceAccount = JSON.parse(process.env.FIREBASE_SECRET);
+} else {
+  // When running locally on your computer, fallback to your local file
+  serviceAccount = require("./firebase-service-account.json");
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -42,12 +50,11 @@ io.on("connection", (socket) => {
      
 app.use(express.static(path.resolve("./public")));
 
-// FIXING THE PATH BUG:
-// Your original code used: res.sendFile("/public/index.html")
-// This causes errors on Windows because of absolute vs relative root pathing.
-// Using path.join with __dirname fixes this perfectly across all Operating Systems.
 app.get("/", (req, res) => {
     return res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-server.listen(9000, () => console.log("Server is running on port 9000"));
+// 5. DYNAMIC PORT ALLOCATION FOR CLOUD DEPLOYMENT
+// Render injects its own dynamic port variable, but we default to 9000 for your local machine
+const PORT = process.env.PORT || 9000;
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
