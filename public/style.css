@@ -1,276 +1,266 @@
+:root {
+    /* --- Surfaces --- */
+    --bg-deep:            #050510;
+    --bg-mid:             #0B0B1E;
+    --glass-fill:         rgba(18, 20, 42, 0.45);
+    --glass-fill-strong:  rgba(18, 20, 42, 0.62);
+    --glass-border:       rgba(140, 160, 255, 0.18);
+    --glass-highlight:    rgba(255, 255, 255, 0.06);
+
+    /* --- Accents --- */
+    --accent-cyan:        #5EE6FF;
+    --accent-violet:      #A78BFA;
+
+    /* --- Text (AA verified) --- */
+    --text-primary:       #EAEAF5;
+    --text-muted:         #9BA0C4;
+
+    /* --- Glow --- */
+    --glow-cyan:          0 0 18px rgba(94, 230, 255, 0.45);
+    --glow-violet:        0 0 18px rgba(167, 139, 250, 0.40);
+
+    /* --- Geometry --- */
+    --radius-lg:          22px;
+    --radius-md:          16px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Deep cosmic black to a rich star-cloud nebula center */
-    background: radial-gradient(circle at 50% 50%, #11072c 0%, #050314 70%, #000000 100%);
+    background:
+        radial-gradient(circle at 50% 35%, var(--bg-mid) 0%, var(--bg-deep) 70%, #000 100%);
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: 0;
-    padding: 20px;
-    height: 100vh;
+    padding: clamp(14px, 3vw, 28px);
+    min-height: 100vh;
+    min-height: 100dvh;
     overflow: hidden;
     position: relative;
-    /* Enable 3D depth perception for elements flying forward */
-    perspective: 800px;
 }
 
 h1 {
-    color: #fff;
-    text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff, 0 0 30px #007bff;
+    color: var(--text-primary);
+    text-shadow: 0 0 14px rgba(94, 230, 255, 0.35);
     font-weight: 300;
-    letter-spacing: 3px;
-    z-index: 100;
-    margin-top: 0;
+    letter-spacing: 4px;
+    z-index: 10;
+    margin: 0 0 clamp(14px, 2.5vh, 22px);
     text-transform: uppercase;
-    font-size: 1.8rem;
+    font-size: clamp(1.15rem, 2.5vw, 1.7rem);
     text-align: center;
 }
 
-/* ==========================================
-   🚀 THE 3D SPACESHIP TRAVEL ENVIRONMENT 
-   ========================================== */
-
-/* Space Container holding elements moving out towards the viewer */
+/* --- Starfield background --- */
 .space-viewport {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    inset: 0;
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    background:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 70% 65%, rgba(200,220,255,0.45), transparent),
+        radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1px 1px at 85% 20%, rgba(180,200,255,0.4), transparent),
+        radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.3), transparent);
 }
 
-/* --- CONTINUOUS COMETS (Streaking from center outwards) --- */
-.comet {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 4px;
-    height: 4px;
-    background: #fff;
-    border-radius: 50%;
-    /* Bright neon kinetic energy tails */
-    box-shadow: 0 0 20px #00f3ff, var(--tail-x) var(--tail-y) 30px 4px var(--comet-color);
-    opacity: 0;
-    animation: hyperDrive var(--duration) linear infinite;
-    animation-delay: var(--delay);
-}
-
-/* --- BURNING ASTEROIDS (Tumbling closer in 3D space) --- */
-.asteroid-3d {
-    position: absolute;
-    top: var(--start-y);
-    left: var(--start-x);
-    width: var(--size);
-    height: var(--size);
-    background: #3a2f28;
-    clip-path: polygon(30% 0%, 75% 10%, 100% 45%, 85% 85%, 35% 100%, 0% 70%);
-    /* Firey magma glow on the edge facing atmospheric friction */
-    box-shadow: inset -6px -6px 15px rgba(0,0,0,0.8), 0 0 15px #ff4500;
-    border: 1px solid #ff7700;
-    opacity: 0;
-    transform-style: preserve-3d;
-    animation: flyForward var(--duration) linear infinite;
-    animation-delay: var(--delay);
-}
-
-/* --- THE SOLAR SYSTEM JURNEY (Planets approaching closely) --- */
-.planet-encounter {
+.star {
     position: absolute;
     top: var(--y);
     left: var(--x);
-    width: var(--p-size);
-    height: var(--p-size);
-    background: var(--planet-surface);
+    width: var(--size);
+    height: var(--size);
     border-radius: 50%;
-    /* Realistic spherical shadowing matching cockpit lighting shadows */
-    box-shadow: inset -30px -30px 50px rgba(0, 0, 0, 0.9), 0 0 40px var(--planet-glow);
+    background: #fff;
     opacity: 0;
-    z-index: 2;
-    animation: encounterPlanet var(--p-duration) linear infinite;
-    animation-delay: var(--p-delay);
+    box-shadow: 0 0 var(--halo) rgba(180, 210, 255, 0.6);
+    animation:
+        twinkle var(--twinkle-dur) ease-in-out infinite,
+        drift var(--drift-dur) linear infinite;
+    animation-delay: var(--delay), var(--delay);
 }
 
-/* ==========================================
-   🪐 COCKPIT / CHAT CONTAINER (GLASSMORPHISM)
-   ========================================== */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.18; }
+    50%      { opacity: 0.85; }
+}
 
+@keyframes drift {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(var(--drift-x), var(--drift-y)); }
+}
+
+/* --- Message viewport glass panel --- */
 #messages {
-    width: 90%;
-    max-width: 600px;
-    height: 50vh;
-    /* Translucent control panel screen visual */
-    background: rgba(8, 12, 28, 0.65);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    /* Dual holographic neon frames */
-    border: 2px solid rgba(0, 243, 255, 0.25);
-    border-radius: 20px;
-    padding: 20px;
+    width: 100%;
+    max-width: 640px;
+    height: clamp(320px, 55vh, 620px);
+    background: var(--glass-fill);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(16px, 3vw, 24px);
     overflow-y: auto;
-    margin-bottom: 20px;
+    margin-bottom: clamp(12px, 2vh, 18px);
     display: flex;
     flex-direction: column;
-    box-shadow: 
-        0 20px 50px rgba(0, 0, 0, 0.5), 
-        inset 0 0 30px rgba(0, 243, 255, 0.1),
-        0 0 20px rgba(0, 243, 255, 0.1);
+    gap: 4px;
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 var(--glass-highlight);
     z-index: 10;
     position: relative;
 }
 
-/* Add UI crosshairs / bracket designs to corners to emphasize spaceship cockpit feel */
+/* Refined cockpit corner brackets */
 #messages::before, #messages::after {
     content: '';
     position: absolute;
-    width: 15px;
-    height: 15px;
-    border: 2px solid #00f3ff;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid rgba(94, 230, 255, 0.35);
     pointer-events: none;
 }
 #messages::before { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
-#messages::after { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+#messages::after  { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
 
+/* --- Messages --- */
 .message-container {
     display: flex;
-    margin-bottom: 14px;
+    flex-direction: column;
+    margin-bottom: 12px;
+    max-width: 78%;
 }
+.message-container.sent     { align-self: flex-end;   align-items: flex-end; }
+.message-container.received { align-self: flex-start; align-items: flex-start; }
 
 .message {
-    padding: 12px 18px;
+    padding: 11px 17px;
     border-radius: 18px;
-    max-width: 70%;
     word-wrap: break-word;
     font-size: 15px;
+    line-height: 1.45;
     color: #fff;
-    line-height: 1.4;
 }
 
-/* Sent message: Plasma Engine Blue Glow */
-.sent {
-    background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%);
-    align-self: flex-end;
-    margin-left: auto;
-    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
-    border-bottom-right-radius: 4px;
+.message.sent {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    border-bottom-right-radius: 5px;
+    box-shadow: 0 4px 18px rgba(14, 165, 233, 0.28);
+}
+.message.received {
+    background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+    border-bottom-left-radius: 5px;
+    box-shadow: 0 4px 18px rgba(147, 51, 234, 0.28);
 }
 
-/* Received message: Warp Core Deep Violet */
-.received {
-    background: linear-gradient(135deg, #8a2387 0%, #e94057 100%);
-    align-self: flex-start;
-    box-shadow: 0 0 15px rgba(233, 64, 87, 0.4);
-    border-bottom-left-radius: 4px;
+/* Newest message: brief ambient neon glow */
+.message-container:last-child .message.sent     { animation: pulse-cyan 1.6s ease-out; }
+.message-container:last-child .message.received { animation: pulse-violet 1.6s ease-out; }
+
+@keyframes pulse-cyan {
+    0%   { box-shadow: var(--glow-cyan), 0 4px 18px rgba(14, 165, 233, 0.28); }
+    100% { box-shadow: 0 4px 18px rgba(14, 165, 233, 0.28); }
+}
+@keyframes pulse-violet {
+    0%   { box-shadow: var(--glow-violet), 0 4px 18px rgba(147, 51, 234, 0.28); }
+    100% { box-shadow: 0 4px 18px rgba(147, 51, 234, 0.28); }
 }
 
-/* --- PILOT CONTROLS INPUT PANEL --- */
+.timestamp {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    padding: 0 6px;
+    letter-spacing: 0.5px;
+}
 
+/* --- Input panel glass --- */
 #input-container {
     display: flex;
-    width: 90%;
+    width: 100%;
     max-width: 640px;
+    gap: 12px;
     z-index: 10;
+    background: var(--glass-fill-strong);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--glass-border);
+    border-radius: 34px;
+    padding: 8px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--glass-highlight);
 }
 
 #messageInput {
     flex-grow: 1;
-    background: rgba(10, 15, 30, 0.8);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 30px;
-    padding: 14px 22px;
+    background: rgba(10, 12, 28, 0.55);
+    border: 1px solid transparent;
+    border-radius: 28px;
+    padding: 13px 22px;
     font-size: 15px;
-    color: #fff;
+    color: var(--text-primary);
     outline: none;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
-
 #messageInput:focus {
-    border-color: #00f3ff;
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4), inset 0 0 10px rgba(0, 243, 255, 0.2);
-    background: rgba(15, 25, 50, 0.9);
+    border-color: var(--accent-cyan);
+    background: rgba(15, 20, 44, 0.75);
+    box-shadow: var(--glow-cyan), inset 0 0 12px rgba(94, 230, 255, 0.12);
 }
-
 #messageInput::placeholder {
-    color: rgba(0, 243, 255, 0.4);
+    color: var(--text-muted);
     font-style: italic;
 }
 
 #sendButton {
     border: none;
-    background: linear-gradient(90deg, #ff007f 0%, #7928ca 100%);
-    color: white;
-    padding: 0 30px;
-    border-radius: 30px;
-    margin-left: 14px;
+    background: linear-gradient(90deg, var(--accent-violet) 0%, var(--accent-cyan) 100%);
+    color: #0B0B1E;
+    padding: 0 clamp(20px, 4vw, 32px);
+    border-radius: 28px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    box-shadow: 0 0 20px rgba(121, 40, 202, 0.5);
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
 }
-
 #sendButton:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
+    box-shadow: var(--glow-violet);
+    filter: brightness(1.08);
+}
+#sendButton:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
 }
 
-/* ==========================================
-   🛸 INTERSTELLAR KEYFRAME ANIMATIONS
-   ========================================== */
-
-/* 1. Comets flying from deep center towards the edges expanding outward */
-@keyframes hyperDrive {
-    0% {
-        transform: translate(-50%, -50%) translate3d(0, 0, -1000px);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        /* Pushes items directly past the viewport edges */
-        transform: translate(-50%, -50%) translate3d(var(--move-x), var(--move-y), 800px);
-        opacity: 0;
-    }
-}
-
-/* 2. Asteroids passing by tumbling on all 3 Axes */
-@keyframes flyForward {
-    0% {
-        transform: translate3d(0, 0, -1000px) rotateX(0deg) rotateY(0deg);
-        opacity: 0;
-    }
-    5% { opacity: 1; }
-    85% { opacity: 1; }
-    100% {
-        transform: translate3d(calc(var(--start-x) * 1.5), calc(var(--start-y) * 1.5), 600px) rotateX(360deg) rotateY(720deg);
-        opacity: 0;
-    }
-}
-
-/* 3. Smooth planetary arrivals approaching from deep star clusters */
-@keyframes encounterPlanet {
-    0% {
-        transform: translate3d(0, 0, -1200px);
-        opacity: 0;
-    }
-    15% { opacity: 0.9; }
-    90% { opacity: 0.9; }
-    100% {
-        transform: translate3d(var(--drift-x), var(--drift-y), 500px);
-        opacity: 0;
-    }
-}
-
-/* Custom Scrollbar */
-#messages::-webkit-scrollbar { width: 6px; }
+/* --- Scrollbar --- */
+#messages::-webkit-scrollbar       { width: 6px; }
 #messages::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-#messages::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.4); border-radius: 10px; }
+#messages::-webkit-scrollbar-thumb {
+    background: rgba(94, 230, 255, 0.35);
+    border-radius: 10px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    #messages   { height: 60vh; border-radius: var(--radius-md); }
+    #sendButton { padding: 0 18px; letter-spacing: 1px; }
+    h1          { letter-spacing: 2px; }
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+    .star                                  { animation: none; opacity: 0.5; }
+    .message-container:last-child .message { animation: none; }
+    #sendButton:hover                      { transform: none; }
+}
