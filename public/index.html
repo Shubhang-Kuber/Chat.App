@@ -20,7 +20,14 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    const socket = io();
+    
+    // NOTE: Replace 'YOUR_ENCODED_FIREBASE_JWT_STRING' with the actual token string 
+// retrieved from your client-side authentication login flow (e.g., user.getIdToken())
+const socket = io({
+    auth: {
+        token: "YOUR_ENCODED_FIREBASE_JWT_STRING" 
+    }
+});
     const sendButton = document.getElementById('sendButton');
     const messageInput = document.getElementById('messageInput');
     const allMessagesDiv = document.getElementById('messages');
